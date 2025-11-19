@@ -1,0 +1,74 @@
+// script.js
+document.addEventListener('DOMContentLoaded', function(){
+  const messageBox = document.getElementById('messageBox');
+  const buttons = document.querySelectorAll('.buttons-row .btn:not(#open-form):not(#open-secret)');
+  const openFormBtn = document.getElementById('open-form');
+  const modal = document.getElementById('modal');
+  const closeModal = document.getElementById('closeModal');
+  const sendBtn = document.getElementById('sendBtn');
+  const messageInput = document.getElementById('messageInput');
+  const secretBox = document.getElementById('secretBox');
+  const openSecret = document.getElementById('open-secret');
+  const copySecret = document.getElementById('copySecret');
+
+  // أزرار الرسائل الجاهزة
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const txt = btn.getAttribute('data-msg') || 'بحبك';
+      messageBox.textContent = txt;
+      // تأثير بسيط
+      messageBox.animate([{ transform: 'scale(0.98)' }, { transform: 'scale(1)' }], { duration:180, easing:'ease-out' });
+    });
+  });
+
+  // فتح الفورم
+  openFormBtn.addEventListener('click', () => {
+    modal.classList.add('open');
+  });
+  closeModal.addEventListener('click', () => {
+    modal.classList.remove('open');
+  });
+
+  // إرسال (محاكاة — يظهر تأكيد)
+  sendBtn.addEventListener('click', () => {
+    const text = messageInput.value.trim();
+    if(!text){
+      alert('اكتب رسالة قبل ما تبعتها 😉');
+      return;
+    }
+    // لو عايز EmailJS تقدر تضيف هنا
+    modal.classList.remove('open');
+    messageBox.textContent = 'تم إرسال الرسالة! 💌';
+    // flash confirm
+    messageBox.animate([{opacity:0.4},{opacity:1}],{duration:300});
+    setTimeout(()=>{ messageBox.textContent = text; }, 700);
+  });
+
+  // رسالة سرية عشوائية
+  openSecret.addEventListener('click', () => {
+    const secrets = [
+      "لما بشوفك الدنيا بتنور",
+      "انتِ ملكة قلبي ومهما عملت عمره ما يتنسى",
+      "كل حاجة حلوة ابتدت لما عرفتك",
+      "بحبك أكتر من كلامي وقدري"
+    ];
+    // اختر واحد عشوائي
+    const chosen = secrets[Math.floor(Math.random()*secrets.length)];
+    // effect reveal (flip)
+    secretBox.style.transformOrigin = 'center';
+    secretBox.animate([{transform:'rotateX(90deg)', opacity:0},{transform:'rotateX(0deg)', opacity:1}],{duration:380,easing:'cubic-bezier(.2,.9,.2,1)'});
+    secretBox.textContent = chosen;
+  });
+
+  // نسخ الرسالة السرية
+  copySecret.addEventListener('click', async () => {
+    const txt = secretBox.textContent || '';
+    try{
+      await navigator.clipboard.writeText(txt);
+      copySecret.textContent = 'اتنسخت ✅';
+      setTimeout(()=>{ copySecret.textContent = 'انسخ الرسالة السرية'; },1200);
+    }catch(e){
+      alert('المتصفح منع النسخ — انسخ يدويًا.');
+    }
+  });
+});
